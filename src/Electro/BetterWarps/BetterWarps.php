@@ -39,25 +39,25 @@ class BetterWarps extends PluginBase implements Listener{
         $warps = new Config($this->getDataFolder() . "Warps.yml", Config::YAML);
         if (!$sender instanceof Player)
         {
-            $sender->sendMessage("§cYou must be in-game to run this command");
+            $sender->sendMessage("§l§b» §r§7§cYou must be in-game to run this command");
             return true;
         }
         switch($cmd->getName()) {
             case "warp":
                 $warps = new Config($this->getDataFolder() . "Warps.yml", Config::YAML);
                 if(!$sender instanceof Player) {
-                    $sender->sendMessage("§l§cERROR: §r§aYou must be in-game to execute this command");
+                    $sender->sendMessage("§l§b» §r§7§r§aYou must be in-game to execute this command");
                     return true;
                 }
                 if (!isset($args[0])){
-                    $sender->sendMessage("§l§cUsage: §r§a/warp <create/remove/list>");
+                    $sender->sendMessage("§l§b» §r§7§l§cUsage: §r§a/warp <create/remove/list>");
                     return true;
                 }
                 switch ($args[0]){
                     case "add":
                     case "create":
                         if (!$sender->hasPermission("betterwarps.cmd") && !$sender->hasPermission("DefaultPermissions::ROOT_OPERATOR")){
-                            $sender->sendMessage("§cYou don't have permissions to use this command");
+                            $sender->sendMessage("§l§b» §r§7§cYou don't have permissions to use this command");
                             return true;
                         }
                         $sender->sendForm($this->warpCreationForm());
@@ -65,26 +65,26 @@ class BetterWarps extends PluginBase implements Listener{
                     case "list":
                         if (empty($warps->getAll()))
                         {
-                            $sender->sendMessage("§cThere are no warps");
+                            $sender->sendMessage("§l§b» §r§7§cThere are no warps");
                             return true;
                         }
                         $sender->sendMessage("§c§lWarps:");
                         foreach ($warps->getAll() as $warp)
                         {
-                            $sender->sendMessage("§a " . $warp["Name"]);
+                            $sender->sendMessage("§l§b» §r§7§a " . $warp["Name"]);
                         }
                         break;
                     case "del":
                     case "delete":
                     case "remove":
                         if (!$sender->hasPermission("betterwarps.cmd") && !$sender->hasPermission("DefaultPermissions::ROOT_OPERATOR")){
-                            $sender->sendMessage("§cYou don't have permissions to use this command");
+                            $sender->sendMessage("§l§b» §r§7§cYou don't have permissions to use this command");
                             return true;
                         }
                         $sender->sendForm($this->warpRemoveForm());
                         break;
                     default:
-                        $sender->sendMessage("§l§cUsage: §r§a/warp <create/remove/list>");
+                        $sender->sendMessage("§l§b» §r§7l§cUsage: §r§a/warp <create/remove/list>");
                         return true;
                 }
                 break;
@@ -96,7 +96,7 @@ class BetterWarps extends PluginBase implements Listener{
                 case strtolower($warp["Name"]):
                     if (!$this->getServer()->getWorldManager()->isWorldGenerated($warp["Level"]))
                     {
-                        $sender->sendMessage("§c§lERROR: §r§aThe world this warp is in does not exist");
+                        $sender->sendMessage("§l§b» §r§7§c§lERROR: §r§aThe world this warp is in does not exist");
                         return true;
                     }
                     if (!$this->getServer()->getWorldManager()->isWorldLoaded($warp["Level"]))
@@ -104,7 +104,6 @@ class BetterWarps extends PluginBase implements Listener{
                         $this->getServer()->getWorldManager()->loadWorld($warp["Level"]);
                     }
                     $sender->teleport(new Position($warp["X"], $warp["Y"], $warp["Z"], $this->getServer()->getWorldManager()->getWorldByName($warp["Level"])));
-                    $sender->sendMessage("§aYou have warped to " . $warp["Name"] . "!");
             }
         }
         return true;
@@ -127,16 +126,16 @@ class BetterWarps extends PluginBase implements Listener{
                 $warpOpRequirePerm = $response->getBool("opRequirePerm");
                 if ($warpName == null)
                 {
-                    $submitter->sendMessage("§l§cERROR: §r§aYou have entered an invalid warp name");
+                    $submitter->sendMessage("§l§b» §r§7§l§cERROR: §r§aYou have entered an invalid warp name");
                     return;
                 }
                 if ($warps->get($warpName)){
-                    $submitter->sendMessage("§l§cERROR: §r§aA warp with that name already exists");
+                    $submitter->sendMessage("§l§b» §r§7§l§cERROR: §r§aA warp with that name already exists");
                     return;
                 }
                 if ($warpDescription == null)
                 {
-                    $submitter->sendMessage("§l§cERROR: §r§aYou have entered an invalid warp description");
+                    $submitter->sendMessage("§l§b» §r§7§l§cERROR: §r§aYou have entered an invalid warp description");
                     return;
                 }
                 if ($warpPermission == null)
@@ -154,7 +153,7 @@ class BetterWarps extends PluginBase implements Listener{
                 $warps->setNested($warpName . ".OpRequiresPerms", $warpOpRequirePerm);
                 $warps->save();
                 $this->registerWarp(strtolower($warpName), $warpPermission, $warpDescription, "/" . $warpName, $warpOpRequirePerm);
-                $submitter->sendMessage("§a" . $warpName . " warp has been successfully created!\nYou may need to rejoin the server for the command to show in chat.");
+                $submitter->sendMessage("§l§b» §r§7§a" . $warpName . " warp has been successfully created!\nYou may need to rejoin the server for the command to show in chat.");
             },
         );
     }
@@ -176,14 +175,14 @@ class BetterWarps extends PluginBase implements Listener{
                 $warpName = $response->getInt("warps");
 
                 if (!is_numeric($warpName)){
-                    $submitter->sendMessage("§l§cERROR: §r§aYou selected an invalid warp");
+                    $submitter->sendMessage("§l§b» §r§7§l§cERROR: §r§aYou selected an invalid warp");
                     return;
                 }
                 $warpName = $list[$response->getInt("warps")];
                 $this->unregisterWarp($warps->getNested($warpName . ".Name"), $warps->getNested($warpName . ".Permission"));
                 $warps->remove($warpName);
                 $warps->save();
-                $submitter->sendMessage("§aThe warp " . $warpName . " has been successfully removed");
+                $submitter->sendMessage("§l§b» §r§7§aThe warp " . $warpName . " has been successfully removed");
             },
         );
     }
